@@ -23,13 +23,21 @@ app.get("/", (req, res) => {
 
 //render listpage
 app.get("/urls", (req, res) => {
-  let templateVars = { urls: urlDatabase };
+  let templateVars = {
+    urls: urlDatabase,
+    username: req.cookies["username"]
+  };
+
   res.render("urls_index", templateVars);
 });
 
 // render new page
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  let templateVars = {
+    username: req.cookies["username"],
+  };
+
+  res.render("urls_new", templateVars);
 });
 
 app.get("/u/:shortURL", (req, res) => {
@@ -42,7 +50,8 @@ app.get("/urls/:id", (req, res) => {
 
   let templateVars = {
     shortURL: req.params.id,
-    longURL: urlDatabase[req.params.id]
+    longURL: urlDatabase[req.params.id],
+    username: req.cookies["username"]
   };
 
   res.render("urls_show", templateVars);
@@ -71,7 +80,7 @@ app.post('/urls/:id', (req, res) => {
 
 //login and cookie
 app.post('/login', (req, res) => {
-  res.cookie('loginName', req.body["username"]);
+  res.cookie('username', req.body["username"]);
   res.redirect("urls");
 });
 
@@ -79,8 +88,4 @@ app.post('/login', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
-
-
-// update once a user submits and update request it should
-// modify the corisonding URL and and redirect back to /urls
 
