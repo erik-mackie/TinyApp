@@ -14,8 +14,9 @@
       <% for (var url in urls) { %>
           <li><%= urls[url] %></li>
           <form method="POST" action="/urls/<%= url %>/delete" ><button type="submit">Remove</button></form>
+          <a href="/urls/<%= url %>">Edit<a>
       <% }; %>
   </ul>
-  <a href="#">New URL</a>
+  <a href="/urls/new">New URL<a>
 </body>
 </html>
