@@ -11,9 +11,12 @@
 
   <h2>Single URL</h2>
   <ul>
-          <li><%= shortURL %></li>
-          <li><%= longURL %></li>
-
+    <li>ShortURL: <%= shortURL %></li>
+    <!-- <li><%= longURL %></li> -->
+    <form action="/urls" method="POST" style="margin:150px;">
+      <input id="update" type="text" value="<%= longURL %>"name="#" style="width: 300px">
+      <input type="submit" value="Submit">
+    </form>
   </ul>
 
 
