@@ -21,11 +21,13 @@ app.get("/", (req, res) => {
   res.send("Hello!");
 });
 
+//render listpage
 app.get("/urls", (req, res) => {
   let templateVars = { urls: urlDatabase };
   res.render("urls_index", templateVars);
 });
 
+// render new page
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
@@ -35,6 +37,7 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
+// display form for editing Url
 app.get("/urls/:id", (req, res) => {
 
   let templateVars = {
@@ -47,9 +50,9 @@ app.get("/urls/:id", (req, res) => {
 
 
 app.post("/urls", (req, res) => {
-
   const randomKey = randomNumber();
   urlDatabase[randomKey] = req.body["longURL"];
+  console.log(urlDatabase)
   /*let templateVars = { urls: urlDatabase };*/
   res.redirect(`urls/${randomKey}`); // redirect too created page
   /*res.redirect('/urls');*/ //redirect too url list
@@ -61,19 +64,21 @@ app.post('/urls/:id/delete', (req, res) => {
   res.redirect("/urls");
 });
 
+//update an url
+app.post('/urls/:id', (req, res) => {
+    let updatedUrl = req.body["update"];
+    urlDatabase[req.params.id] = updatedUrl;
+    console.log(urlDatabase)
+
+    res.redirect("/urls");
+})
+
 // start the server
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
 
 
-// add delete buttons which reference the proper id
+// update once a user submits and update request it should
+// modify the corisonding URL and and redirect back to /urls
 
-// route server, so when delete is pressed, it removes from object and loads page
-/*
-app.post('/drinks/:id/delete', (req, res) => {
-  let targetId = req.params.id;
-
-  let targetDrink = drinkDatabase.find(function(drink) {
-    return drink.id === targetId;
-  })*/
