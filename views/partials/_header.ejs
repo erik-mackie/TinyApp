@@ -5,12 +5,24 @@
 </head>
 
 <body>
-  <form action="/login" method="POST" style="margin:150px;">
+  <h2 style="color:blue;"><%= username %></h2>
+  <% if(!username){ %>
+   <form action="/login" method="POST" style="margin:50px;">
     <input id="username" type="text" name="username" placeholder="Please Enter A Username" style="width: 300px">
-    <input id="loginBtn" type="submit" value="Submit">
-    <h4><%= username %></h4>
+    <input id="loginBtn" type="submit" value="Login">
   </form>
+ <% } else{ %>
+   <form action="/logout" method="POST" style="margin:50px;">
+    <input id="logoutBtn" type="submit" value="Logout">
+  </form>
+<% } %>
+
+
 
 
 </body>
 </html>
+
+
+
+<!-- change logic so if local user name is present, logout form exists. and has seprate POST / LOGOUT values Othwwise show login form  -->

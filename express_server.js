@@ -78,9 +78,15 @@ app.post('/urls/:id', (req, res) => {
     res.redirect("/urls");
 });
 
-//login and cookie
+//login and create cookie
 app.post('/login', (req, res) => {
   res.cookie('username', req.body["username"]);
+  res.redirect("urls");
+});
+
+// logout and delete cookie
+app.post('/logout', (req, res) => {
+  res.clearCookie('username')
   res.redirect("urls");
 });
 
@@ -89,3 +95,6 @@ app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
 
+
+
+// logout endpoint clears cookie. use clearcookie API DOC
