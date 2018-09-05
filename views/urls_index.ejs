@@ -12,12 +12,10 @@
   <h2> URL LIST </h2>
   <ul>
       <% for (var url in urls) { %>
-          <li><%= urls[url] %> </li>
-
-          <form method="POST" action="/urls/9sm5xK/delete"><button>Remove</button></form>
+          <li><%= urls[url] %></li>
+          <form method="POST" action="/urls/<%= url %>/delete" ><button type="submit">Remove</button></form>
       <% }; %>
   </ul>
   <a href="#">New URL</a>
-  <form method="POST" action="/urls/9sm5xK/delete">...</form>
 </body>
 </html>
