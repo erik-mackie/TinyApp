@@ -5,18 +5,18 @@ const app = express();
 const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser"); //parses incoming request bodys, get information from forms submition
 const randomNumber = require("./randomNumber");
+const cookieParser = require('cookie-parser');
 
 app.use(bodyParser.urlencoded({extended: true}));
-
 app.set("view engine", "ejs");
+app.use(cookieParser());
 
 var urlDatabase = {
   'b2xVn2': 'http://www.lighthouselabs.ca',
   '9sm5xK': 'http://www.google.com'
 };
 
-console.log(urlDatabase);
-
+// home pagevar cookieParser = require('cookie-parser')
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -52,10 +52,8 @@ app.get("/urls/:id", (req, res) => {
 app.post("/urls", (req, res) => {
   const randomKey = randomNumber();
   urlDatabase[randomKey] = req.body["longURL"];
-  console.log(urlDatabase)
-  /*let templateVars = { urls: urlDatabase };*/
   res.redirect(`urls/${randomKey}`); // redirect too created page
-  /*res.redirect('/urls');*/ //redirect too url list
+
 });
 
 // delete a url
@@ -68,10 +66,14 @@ app.post('/urls/:id/delete', (req, res) => {
 app.post('/urls/:id', (req, res) => {
     let updatedUrl = req.body["update"];
     urlDatabase[req.params.id] = updatedUrl;
-    console.log(urlDatabase)
-
     res.redirect("/urls");
-})
+});
+
+//login and cookie
+app.post('/login', (req, res) => {
+  console.log(res.cookie('loginName', req.body["username"]))
+  res.redirect("urls");
+});
 
 // start the server
 app.listen(PORT, () => {
