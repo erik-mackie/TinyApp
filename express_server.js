@@ -71,7 +71,7 @@ app.post('/urls/:id', (req, res) => {
 
 //login and cookie
 app.post('/login', (req, res) => {
-  console.log(res.cookie('loginName', req.body["username"]))
+  res.cookie('loginName', req.body["username"]);
   res.redirect("urls");
 });
 
