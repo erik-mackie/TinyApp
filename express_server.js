@@ -1,11 +1,12 @@
 "use strict"
 
-var express = require("express");
-var app = express();
-var PORT = 8080; // default port 8080
+const express = require("express");
+const app = express();
+const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
-app.use(bodyParser.urlencoded({extended: true}));
 const randomNumber = require("./randomNumber");
+
+app.use(bodyParser.urlencoded({extended: true}));
 
 app.set("view engine", "ejs");
 
@@ -27,6 +28,11 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
+app.get("/u/:shortURL", (req, res) => {
+   let longURL = urlDatabase[req.params.shortURL];
+  res.redirect(longURL);
+});
+
 app.get("/urls/:id", (req, res) => {
 
   let templateVars = {
@@ -36,6 +42,7 @@ app.get("/urls/:id", (req, res) => {
 
   res.render("urls_show", templateVars);
 });
+
 
 app.post("/urls", (req, res) => {
   const randomKey= randomNumber();
