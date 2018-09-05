@@ -45,6 +45,10 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
+app.get('/register', (req, res) => {
+  // register page
+})
+
 // display form for editing Url
 app.get("/urls/:id", (req, res) => {
 
@@ -98,3 +102,10 @@ app.listen(PORT, () => {
 
 
 // logout endpoint clears cookie. use clearcookie API DOC
+
+
+
+
+
+
+user registration
