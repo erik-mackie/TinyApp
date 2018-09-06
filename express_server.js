@@ -56,9 +56,9 @@ app.get("/u/:shortURL", (req, res) => {
   let longURL = urlDatabase[req.params.shortURL];
   res.redirect(longURL);
 });
-  // register page
-app.get('/register', (req, res) => {
 
+  // render register page
+app.get('/register', (req, res) => {
   res.render("user_registration");
 })
 
@@ -74,7 +74,7 @@ app.get("/urls/:id", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
-
+//
 app.post("/urls", (req, res) => {
   const randomKey = randomNumber();
   urlDatabase[randomKey] = req.body["longURL"];
@@ -106,6 +106,27 @@ app.post('/logout', (req, res) => {
   res.clearCookie('username')
   res.redirect("urls");
 });
+
+//handle register data
+app.post('/register', (req, res) => {
+  let randomID = randomNumber()
+  users[randomID] = {
+    id: `${randomID}`,
+    email: req.body['email'],
+    password: req.body['password']
+  }
+  console.log(users)
+})
+
+// adds a new object from user information
+//use random function to gen user ID
+
+
+//set cookie and redirect
+// after it appends to the user object it should
+
+
+
 
 // start the server
 app.listen(PORT, () => {
