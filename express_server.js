@@ -13,7 +13,6 @@ app.use(cookieParser());
 
 let urlDatabase = {
   'b2xVn2': 'http://www.lighthouselabs.ca',
-  '9sm5xK': 'http://www.google.com'
 };
 
 let users = {
@@ -22,14 +21,8 @@ let users = {
     email: "user@example.com",
     password: "purple-monkey-dinosaur"
   },
- "user2RandomID": {
-    id: "user2RandomID",
-    email: "user2@example.com",
-    password: "dishwasher-funk"
-  }
 };
 
-console.log(users)
 // home pagevar cookieParser = require('cookie-parser')
 app.get("/", (req, res) => {
   res.render("welcome");
@@ -46,10 +39,16 @@ app.get("/urls", (req, res) => {
 
 // render new page
 app.get("/urls/new", (req, res) => {
+  // check to see if user is logged in
+  if (utilities.searchUsers(users, "id", req.cookies['user_id'])) {
   let templateVars = {
     user: users[req.cookies["user_id"]]
   };
   res.render("urls_new", templateVars);
+  // if not logged in render login page
+  }else {
+  res.render("user_login");
+  }
 });
 
 //if short url is passed, redirect to longUrl
@@ -110,6 +109,9 @@ app.post('/login', (req, res) => {
   if (utilities.searchUsers(users, 'email', req.body['email'])) {
     if (utilities.searchUsers(users, 'password', req.body['password'])) {
       //turn object into array
+      // can just use search users??
+      // can just use search users??
+      // can just use search users??
       let usersArray = Object.keys(users).map(user => {
         return users[user];
       });
@@ -117,8 +119,11 @@ app.post('/login', (req, res) => {
       let specific = usersArray.filter(user => {
         return user.email === req.body['email'];
       })[0];
+      // can just use search users??
+      // can just use search users??
+      // can just use search users??
       res.cookie('user_id', specific['id']);
-      res.redirect('/');
+      res.redirect('/urls');
     } else {
       res.status(403);;
       res.send("Incorrect Password");
@@ -127,6 +132,7 @@ app.post('/login', (req, res) => {
     res.status(403);;
     res.send("Email not found");
   }
+  console.log(users)
 });
 
 // logout and delete cookie
@@ -168,7 +174,4 @@ app.listen(PORT, () => {
 
 
 
-
-
-//started at 445 - 7
 
