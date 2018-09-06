@@ -5,8 +5,6 @@ const app = express();
 const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser"); //parses incoming request bodys, get information from forms submition
 const utilities = require("./utilities");
-
-console.log(utilities)
 const cookieParser = require('cookie-parser');
 
 app.use(bodyParser.urlencoded({extended: true}));
@@ -30,7 +28,7 @@ let users = {
     password: "dishwasher-funk"
   }
 };
-
+console.log(users)
 // home pagevar cookieParser = require('cookie-parser')
 app.get("/", (req, res) => {
   res.send("Hello!");
@@ -40,7 +38,7 @@ app.get("/", (req, res) => {
 app.get("/urls", (req, res) => {
   let templateVars = {
     urls: urlDatabase,
-    username: req.cookies["username"]
+    users: req.cookies["user_id"]
   };
   res.render("urls_index", templateVars);
 });
@@ -48,7 +46,7 @@ app.get("/urls", (req, res) => {
 // render new page
 app.get("/urls/new", (req, res) => {
   let templateVars = {
-    username: req.cookies["username"],
+    users: req.cookies["user_id"]
   };
   res.render("urls_new", templateVars);
 });
@@ -70,7 +68,7 @@ app.get("/urls/:id", (req, res) => {
   let templateVars = {
     shortURL: req.params.id,
     longURL: urlDatabase[req.params.id],
-    username: req.cookies["username"]
+    users: req.cookies["user_id"]
   };
 
   res.render("urls_show", templateVars);
@@ -100,7 +98,7 @@ app.post('/urls/:id', (req, res) => {
 //login and create cookie
 app.post('/login', (req, res) => {
   res.cookie('username', req.body["username"]);
-  res.redirect("urls");
+  res.redirect("urls");s
 });
 
 // logout and delete cookie
@@ -114,7 +112,7 @@ app.post('/register', (req, res) => {
   let randomID = utilities.randomNumber();
   if (req.body['email'] === undefined || req.body['password'] === undefined ) {
     res.status(400);
-    res.send("Didn't enter password");
+    res.send("Missing email, or password");
   } else if (utilities.searchUsers(users, 'email', req.body['email'])) {
     res.status(400);;
     res.send("Email, already exists");
@@ -124,15 +122,11 @@ app.post('/register', (req, res) => {
       email: req.body['email'],
       password: req.body['password']
     };
+    console.log(users)
     res.cookie('user_id', randomID);
     res.redirect("/urls");
   }
 })
-
-
-//set cookie and redirect
-// after it appends to the user object it should
-
 
 
 // start the server
@@ -148,5 +142,5 @@ app.listen(PORT, () => {
 
 
 
-//started at 445
+//started at 445 - 7
 

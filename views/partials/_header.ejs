@@ -5,8 +5,8 @@
 </head>
 
 <body>
-  <h2 style="color:blue;"><%= username %></h2>
-  <% if(!username){ %>
+  <h2 style="color:blue;"><%= users %></h2>
+  <% if(!users){ %>
    <form action="/login" method="POST" style="margin:50px;">
     <input id="username" type="text" name="username" placeholder="Please Enter A Username" style="width: 300px">
     <input id="loginBtn" type="submit" value="Login">
@@ -25,4 +25,6 @@
 
 
 
-<!-- change logic so if local user name is present, logout form exists. and has seprate POST / LOGOUT values Othwwise show login form  -->
+<!-- instead of passing cookie in the cookie value into the templatesvars, and endpoints rending the partial should now pass the entire object by lookinh it up in th users object   -->
+
+<!-- chane the templatevars to pass in a user object proerty instead of the username   -->
