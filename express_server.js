@@ -16,6 +16,19 @@ var urlDatabase = {
   '9sm5xK': 'http://www.google.com'
 };
 
+const users = {
+  "userRandomID": {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur"
+  },
+ "user2RandomID": {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk"
+  }
+};
+
 // home pagevar cookieParser = require('cookie-parser')
 app.get("/", (req, res) => {
   res.send("Hello!");
@@ -27,7 +40,6 @@ app.get("/urls", (req, res) => {
     urls: urlDatabase,
     username: req.cookies["username"]
   };
-
   res.render("urls_index", templateVars);
 });
 
@@ -36,10 +48,10 @@ app.get("/urls/new", (req, res) => {
   let templateVars = {
     username: req.cookies["username"],
   };
-
   res.render("urls_new", templateVars);
 });
 
+//if short url is passed, redirect to longUrl
 app.get("/u/:shortURL", (req, res) => {
   let longURL = urlDatabase[req.params.shortURL];
   res.redirect(longURL);
