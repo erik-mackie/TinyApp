@@ -4,19 +4,21 @@ const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser"); //parses incoming request bodys, get information from forms submition
-const randomNumber = require("./randomNumber");
+const utilities = require("./utilities");
+
+console.log(utilities)
 const cookieParser = require('cookie-parser');
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
 app.use(cookieParser());
 
-var urlDatabase = {
+let urlDatabase = {
   'b2xVn2': 'http://www.lighthouselabs.ca',
   '9sm5xK': 'http://www.google.com'
 };
 
-const users = {
+let users = {
   "userRandomID": {
     id: "userRandomID",
     email: "user@example.com",
@@ -76,7 +78,7 @@ app.get("/urls/:id", (req, res) => {
 
 //
 app.post("/urls", (req, res) => {
-  const randomKey = randomNumber();
+  const randomKey = utilities.randomNumber();
   urlDatabase[randomKey] = req.body["longURL"];
   res.redirect(`urls/${randomKey}`); // redirect too created page
 
@@ -109,14 +111,22 @@ app.post('/logout', (req, res) => {
 
 //handle register data
 app.post('/register', (req, res) => {
-  let randomID = randomNumber();
-  users[randomID] = {
-    id: `${randomID}`,
-    email: req.body['email'],
-    password: req.body['password']
-  };
-  res.cookie('user_id', randomID);
-  res.redirect("/urls");
+  let randomID = utilities.randomNumber();
+  if (req.body['email'] === undefined || req.body['password'] === undefined ) {
+    res.status(400);
+    res.send("Didn't enter password");
+  } else if (utilities.searchUsers(users, 'email', req.body['email'])) {
+    res.status(400);;
+    res.send("Email, already exists");
+  } else {
+    users[randomID] = {
+      id: `${randomID}`,
+      email: req.body['email'],
+      password: req.body['password']
+    };
+    res.cookie('user_id', randomID);
+    res.redirect("/urls");
+  }
 })
 
 
@@ -139,3 +149,4 @@ app.listen(PORT, () => {
 
 
 //started at 445
+
