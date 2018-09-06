@@ -109,22 +109,19 @@ app.post('/logout', (req, res) => {
 
 //handle register data
 app.post('/register', (req, res) => {
-  let randomID = randomNumber()
+  let randomID = randomNumber();
   users[randomID] = {
     id: `${randomID}`,
     email: req.body['email'],
     password: req.body['password']
-  }
-  console.log(users)
+  };
+  res.cookie('user_id', randomID);
+  res.redirect("/urls");
 })
-
-// adds a new object from user information
-//use random function to gen user ID
 
 
 //set cookie and redirect
 // after it appends to the user object it should
-
 
 
 
