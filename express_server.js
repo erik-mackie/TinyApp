@@ -44,9 +44,10 @@ app.get("/u/:shortURL", (req, res) => {
   let longURL = urlDatabase[req.params.shortURL];
   res.redirect(longURL);
 });
-
-app.get('/register', (req, res) => {
   // register page
+app.get('/register', (req, res) => {
+
+  res.render("user_registration");
 })
 
 // display form for editing Url
@@ -107,5 +108,4 @@ app.listen(PORT, () => {
 
 
 
-
-user registration
+//started at 445
