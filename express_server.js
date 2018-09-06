@@ -62,6 +62,14 @@ app.get('/register', (req, res) => {
   res.render("user_registration");
 })
 
+// render login page
+app.get('/login', (req, res) => {
+  let templateVars = {
+    users: req.cookies["user_id"]
+  };
+  res.render("user_login", templateVars);
+})
+
 // display form for editing Url
 app.get("/urls/:id", (req, res) => {
 
@@ -97,13 +105,13 @@ app.post('/urls/:id', (req, res) => {
 
 //login and create cookie
 app.post('/login', (req, res) => {
-  res.cookie('username', req.body["username"]);
-  res.redirect("urls");s
+  /*res.cookie('username', req.body["username"]);*/
+  res.redirect("urls");
 });
 
 // logout and delete cookie
 app.post('/logout', (req, res) => {
-  res.clearCookie('username')
+  res.clearCookie('user_id')
   res.redirect("urls");
 });
 
