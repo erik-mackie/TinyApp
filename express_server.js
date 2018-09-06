@@ -28,17 +28,18 @@ let users = {
     password: "dishwasher-funk"
   }
 };
+
 console.log(users)
 // home pagevar cookieParser = require('cookie-parser')
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  res.render("welcome");
 });
 
 //render listpage
 app.get("/urls", (req, res) => {
   let templateVars = {
     urls: urlDatabase,
-    users: req.cookies["user_id"]
+    user: users[req.cookies["user_id"]]
   };
   res.render("urls_index", templateVars);
 });
@@ -46,7 +47,7 @@ app.get("/urls", (req, res) => {
 // render new page
 app.get("/urls/new", (req, res) => {
   let templateVars = {
-    users: req.cookies["user_id"]
+    user: users[req.cookies["user_id"]]
   };
   res.render("urls_new", templateVars);
 });
@@ -60,15 +61,15 @@ app.get("/u/:shortURL", (req, res) => {
   // render register page
 app.get('/register', (req, res) => {
   res.render("user_registration");
-})
+});
 
 // render login page
 app.get('/login', (req, res) => {
   let templateVars = {
-    users: req.cookies["user_id"]
+    user: users[req.cookies["user_id"]]
   };
   res.render("user_login", templateVars);
-})
+});
 
 // display form for editing Url
 app.get("/urls/:id", (req, res) => {
@@ -76,7 +77,7 @@ app.get("/urls/:id", (req, res) => {
   let templateVars = {
     shortURL: req.params.id,
     longURL: urlDatabase[req.params.id],
-    users: req.cookies["user_id"]
+    user: users[req.cookies["user_id"]]
   };
 
   res.render("urls_show", templateVars);
@@ -108,8 +109,15 @@ app.post('/login', (req, res) => {
   // find if long user email exists and if so, if password matches
   if (utilities.searchUsers(users, 'email', req.body['email'])) {
     if (utilities.searchUsers(users, 'password', req.body['password'])) {
-      // correct email, and password entry, set cookie
-      res.cookie(req.body['id'], req['user_id']);
+      //turn object into array
+      let usersArray = Object.keys(users).map(user => {
+        return users[user];
+      });
+      // filter object for entry
+      let specific = usersArray.filter(user => {
+        return user.email === req.body['email'];
+      })[0];
+      res.cookie('user_id', specific['id']);
       res.redirect('/');
     } else {
       res.status(403);;
@@ -119,12 +127,7 @@ app.post('/login', (req, res) => {
     res.status(403);;
     res.send("Email not found");
   }
-
 });
-// find user that matches email
-// if user cannot be found, return with error 403
-//if user is located compare password vs existing password if not match, 403
-// if both check out, sets the user_ID cookie with the mactching random id
 
 // logout and delete cookie
 app.post('/logout', (req, res) => {
