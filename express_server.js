@@ -12,7 +12,10 @@ app.set("view engine", "ejs");
 app.use(cookieParser());
 
 let urlDatabase = {
-  'b2xVn2': 'http://www.lighthouselabs.ca',
+  userID: {
+    'b2xVn2': 'http://www.lighthouselabs.ca',
+    'ag4gda': 'http://www.google.ca'
+  }
 };
 
 let users = {
@@ -28,14 +31,17 @@ app.get("/", (req, res) => {
   res.render("welcome");
 });
 
+
 //render listpage
 app.get("/urls", (req, res) => {
+  console.log(req.cookies['user_id'], "from urls") //task 2
   let templateVars = {
-    urls: urlDatabase,
+    urls: urlDatabase["user_id"], //task2
     user: users[req.cookies["user_id"]]
   };
   res.render("urls_index", templateVars);
 });
+
 
 // render new page
 app.get("/urls/new", (req, res) => {
@@ -47,9 +53,10 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new", templateVars);
   // if not logged in render login page
   }else {
-  res.render("user_login");
+    res.render("user_login");
   }
 });
+
 
 //if short url is passed, redirect to longUrl
 app.get("/u/:shortURL", (req, res) => {
@@ -57,10 +64,12 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
+
   // render register page
 app.get('/register', (req, res) => {
   res.render("user_registration");
 });
+
 
 // render login page
 app.get('/login', (req, res) => {
@@ -72,21 +81,26 @@ app.get('/login', (req, res) => {
 
 // display form for editing Url
 app.get("/urls/:id", (req, res) => {
-
   let templateVars = {
     shortURL: req.params.id,
     longURL: urlDatabase[req.params.id],
     user: users[req.cookies["user_id"]]
   };
-
   res.render("urls_show", templateVars);
 });
 
-//
+//create URL and redirect to edit page
 app.post("/urls", (req, res) => {
   const randomKey = utilities.randomNumber();
-  urlDatabase[randomKey] = req.body["longURL"];
-  res.redirect(`urls/${randomKey}`); // redirect too created page
+  console.log(urlDatabase)
+  // check if database has existing user and create if not
+  if (!urlDatabase.hasOwnProperty(req.cookies['user_id'])) {
+    urlDatabase[req.cookies["user_id"]] = {};
+    urlDatabase[req.cookies["user_id"]][randomKey] = req.body["longURL"]; // task2
+  } else {
+    urlDatabase[req.cookies["user_id"]][randomKey] = req.body["longURL"];
+  }
+  res.redirect(`urls/${randomKey}`); // redirect too created page eventualy
 
 });
 
@@ -102,6 +116,8 @@ app.post('/urls/:id', (req, res) => {
     urlDatabase[req.params.id] = updatedUrl;
     res.redirect("/urls");
 });
+
+
 
 //login and create cookie
 app.post('/login', (req, res) => {
@@ -132,7 +148,7 @@ app.post('/login', (req, res) => {
     res.status(403);;
     res.send("Email not found");
   }
-  console.log(users)
+  console.log(users, "from login")
 });
 
 // logout and delete cookie
@@ -141,14 +157,16 @@ app.post('/logout', (req, res) => {
   res.redirect("urls");
 });
 
-//handle register data
+
+
+//handle register data create cookie
 app.post('/register', (req, res) => {
   let randomID = utilities.randomNumber();
   if (req.body['email'] === undefined || req.body['password'] === undefined ) {
     res.status(400);
     res.send("Missing email, or password");
   } else if (utilities.searchUsers(users, 'email', req.body['email'])) {
-    res.status(400);;
+    res.status(400);
     res.send("Email, already exists");
   } else {
     users[randomID] = {
@@ -156,7 +174,7 @@ app.post('/register', (req, res) => {
       email: req.body['email'],
       password: req.body['password']
     };
-    console.log(users)
+    console.log(users, "from register")
     res.cookie('user_id', randomID);
     res.redirect("/urls");
   }
