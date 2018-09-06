@@ -105,9 +105,26 @@ app.post('/urls/:id', (req, res) => {
 
 //login and create cookie
 app.post('/login', (req, res) => {
-  /*res.cookie('username', req.body["username"]);*/
-  res.redirect("urls");
+  // find if long user email exists and if so, if password matches
+  if (utilities.searchUsers(users, 'email', req.body['email'])) {
+    if (utilities.searchUsers(users, 'password', req.body['password'])) {
+      // correct email, and password entry, set cookie
+      res.cookie(req.body['id'], req['user_id']);
+      res.redirect('/');
+    } else {
+      res.status(403);;
+      res.send("Incorrect Password");
+    }
+  } else {
+    res.status(403);;
+    res.send("Email not found");
+  }
+
 });
+// find user that matches email
+// if user cannot be found, return with error 403
+//if user is located compare password vs existing password if not match, 403
+// if both check out, sets the user_ID cookie with the mactching random id
 
 // logout and delete cookie
 app.post('/logout', (req, res) => {
