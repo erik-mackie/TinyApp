@@ -34,9 +34,8 @@ app.get("/", (req, res) => {
 
 //render listpage
 app.get("/urls", (req, res) => {
-  console.log(req.cookies['user_id'], "from urls") //task 2
   let templateVars = {
-    urls: urlDatabase["user_id"], //task2
+    urls: urlDatabase[req.cookies['user_id']], //task2
     user: users[req.cookies["user_id"]]
   };
   res.render("urls_index", templateVars);
@@ -79,6 +78,7 @@ app.get('/login', (req, res) => {
   res.render("user_login", templateVars);
 });
 
+
 // display form for editing Url
 app.get("/urls/:id", (req, res) => {
   let templateVars = {
@@ -89,24 +89,28 @@ app.get("/urls/:id", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+
+
 //create URL and redirect to edit page
 app.post("/urls", (req, res) => {
   const randomKey = utilities.randomNumber();
-  console.log(urlDatabase)
   // check if database has existing user and create if not
   if (!urlDatabase.hasOwnProperty(req.cookies['user_id'])) {
     urlDatabase[req.cookies["user_id"]] = {};
     urlDatabase[req.cookies["user_id"]][randomKey] = req.body["longURL"]; // task2
   } else {
+    // if exists, add to object
     urlDatabase[req.cookies["user_id"]][randomKey] = req.body["longURL"];
   }
+  console.log(urlDatabase)
   res.redirect(`urls/${randomKey}`); // redirect too created page eventualy
 
 });
 
 // delete a url
 app.post('/urls/:id/delete', (req, res) => {
-  delete urlDatabase[req.params.id];
+
+  delete urlDatabase[req.cookies['user_id']][req.params.id];
   res.redirect("/urls");
 });
 
@@ -121,6 +125,7 @@ app.post('/urls/:id', (req, res) => {
 
 //login and create cookie
 app.post('/login', (req, res) => {
+
   // find if long user email exists and if so, if password matches
   if (utilities.searchUsers(users, 'email', req.body['email'])) {
     if (utilities.searchUsers(users, 'password', req.body['password'])) {
@@ -138,6 +143,7 @@ app.post('/login', (req, res) => {
       // can just use search users??
       // can just use search users??
       // can just use search users??
+      console.log(urlDatabase)
       res.cookie('user_id', specific['id']);
       res.redirect('/urls');
     } else {
@@ -148,7 +154,6 @@ app.post('/login', (req, res) => {
     res.status(403);;
     res.send("Email not found");
   }
-  console.log(users, "from login")
 });
 
 // logout and delete cookie
@@ -174,7 +179,6 @@ app.post('/register', (req, res) => {
       email: req.body['email'],
       password: req.body['password']
     };
-    console.log(users, "from register")
     res.cookie('user_id', randomID);
     res.redirect("/urls");
   }
