@@ -24,6 +24,7 @@ let urlDatabase = {
   }
 };
 
+
 let users = {
   "userRandomID": {
     id: "userRandomID",
@@ -65,9 +66,17 @@ app.get("/urls/new", (req, res) => {
 
 //if short url is passed, redirect to longUrl
 app.get("/u/:shortURL", (req, res) => {
-
-  let longURL = urlDatabase[req.params.shortURL];
-  res.redirect(longURL);
+  let longUrl = false;
+  for (var url in urlDatabase) {
+    if(urlDatabase[url][req.params.shortURL]) {
+       longUrl = urlDatabase[url][req.params.shortURL];
+    }
+  }
+  if (longUrl) {
+    res.redirect(longUrl);
+  } else {
+    res.status(403);
+  }
 });
 
   // render register page
@@ -141,8 +150,10 @@ app.post('/urls/:id', (req, res) => {
 //login and create cookie
 app.post('/login', (req, res) => {
   // find if long user email exists and if so, if password matches
-  if (utilities.searchUsers(users, 'email', req.body['email'])) {
-    if (utilities.searchUsers(users, 'password', req.body['password'])) {
+let hasEmail = utilities.searchUsers(users, 'email', req.body['email']);
+let hasPassword = utilities.searchUsers(users, 'password', req.body['password']);
+
+  if (hasEmail && hasPassword) {
       //turn object into array
       // can just use search users??
       // can just use search users??
@@ -151,23 +162,20 @@ app.post('/login', (req, res) => {
         return users[user];
       });
       // filter object for entry
-      let specific = usersArray.filter(user => {
+      let currentUser = usersArray.filter(user => {
         return user.email === req.body['email'];
       })[0];
       // can just use search users??
       // can just use search users??
       // can just use search users??
       console.log(urlDatabase)
-      res.cookie('user_id', specific['id']);
+      res.cookie('user_id', currentUser['id']);
       res.redirect('/urls');
     } else {
+      let errorMessage = !hasEmail ? 'Incorrect Email' : 'Incorrect Password';
       res.status(403);;
-      res.send("Incorrect Password");
+      res.send(errorMessage);
     }
-  } else {
-    res.status(403);;
-    res.send("Email not found");
-  }
 });
 
 
@@ -177,11 +185,12 @@ app.post('/logout', (req, res) => {
   res.redirect("urls");
 });
 
+//refactor if else
 
 //handle register data create cookie
 app.post('/register', (req, res) => {
   let randomID = utilities.randomNumber();
-  if (req.body['email'] === undefined || req.body['password'] === undefined ) {
+  if (!req.body['email'] || !req.body['password']) {
     res.status(400);
     res.send("Missing email, or password");
   } else if (utilities.searchUsers(users, 'email', req.body['email'])) {

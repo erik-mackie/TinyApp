@@ -6,7 +6,7 @@ module.exports = {
   searchUsers: function(users, passedKey, passedValue) {
     for (let obj in users) {
       if(users[obj][passedKey] === passedValue) {
-      return true;
+      return users[obj][passedKey] === passedValue;
       }
     }
       return false;
