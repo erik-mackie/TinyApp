@@ -6,7 +6,7 @@
 
 <body>
   <% if(user){ %>
-  <h2 style="color:blue;"><%= user.id %></h2>
+  <h2 style="color:blue;"><%= user.email %></h2>
 
   <form action="/logout" method="POST" style="margin:50px;">
     <input id="logoutBtn" type="submit" value="Logout">

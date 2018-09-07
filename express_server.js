@@ -6,6 +6,8 @@ const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser"); //parses incoming request bodys, get information from forms submition
 const utilities = require("./utilities");
 const cookieParser = require('cookie-parser');
+/*const bcrypt = require('bcrypt');*/
+
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
@@ -17,7 +19,6 @@ let urlDatabase = {
     'b2xVn2': 'http://www.lighthouselabs.ca',
     'ag4gda': 'http://www.google.ca'
   },
-
   '13d345': {
     '13d5wa': 'http://www.facebook.ca',
     '5sc2fz': 'http://www.whatever.ca'
@@ -96,13 +97,14 @@ app.get('/login', (req, res) => {
 
 // display form for editing Url
 app.get("/urls/:id", (req, res) => {
-   let templateVars = {
-      shortURL: req.params.id,
-      longURL: urlDatabase[req.params.id],
-      user: users[req.cookies["user_id"]],
-      belongToUser: false
-    };
 
+  let templateVars = {
+    shortURL: req.params.id,
+    longURL:  urlDatabase[req.cookies['user_id']][req.params.id],
+    user: users[req.cookies["user_id"]],
+    belongToUser: false
+  };
+  console.log(templateVars.longUrl)
   let inUserObject = utilities.checkBelongsToUser(urlDatabase, req.params.id, req.cookies['user_id']);
   // if in another users data object, show alert on page
   if (req.params.id !== inUserObject ) {
@@ -140,7 +142,7 @@ app.post('/urls/:id/delete', (req, res) => {
 //update an url
 app.post('/urls/:id', (req, res) => {
   let updatedUrl = req.body["update"];
-  urlDatabase[req.params.id] = updatedUrl;
+  urlDatabase[req.cookies['user_id']][req.params.id] = updatedUrl;
   res.redirect("/urls");
 });
 //error code 403 fosearchUsers(users, 'email', req.body['email']))r forbidden
