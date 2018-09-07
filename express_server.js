@@ -6,7 +6,7 @@ const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser"); //parses incoming request bodys, get information from forms submition
 const utilities = require("./utilities");
 const cookieParser = require('cookie-parser');
-/*const bcrypt = require('bcrypt');*/
+const bcrypt = require('bcrypt');
 
 
 app.use(bodyParser.urlencoded({extended: true}));
@@ -31,7 +31,8 @@ let users = {
     id: "userRandomID",
     email: "user@example.com",
     password: "purple-monkey-dinosaur"
-  },
+  }
+
 };
 
 // home pagevar cookieParser = require('cookie-parser')
@@ -151,20 +152,23 @@ app.post('/urls/:id', (req, res) => {
 
 //login and create cookie
 app.post('/login', (req, res) => {
-  // find if long user email exists and if so, if password matches
-let hasEmail = utilities.searchUsers(users, 'email', req.body['email']);
-let hasPassword = utilities.searchUsers(users, 'password', req.body['password']);
 
-  if (hasEmail && hasPassword) {
-      //turn object into array
+// find if long user email exists
+  let userExists = utilities.searchUsers(users, 'email', req.body['email']);
+
+// if user exists check password
+  if (userExists) {
+    let correctPass = bcrypt.compareSync(req.body['password'], userExists.password);
+    if (correctPass) {
+       //turn object into array
       // can just use search users??
       // can just use search users??
       // can just use search users??
-      let usersArray = Object.keys(users).map(user => {
+      let usersArray = Object.keys(users).map(user => { // refactor
         return users[user];
       });
       // filter object for entry
-      let currentUser = usersArray.filter(user => {
+      let currentUser = usersArray.filter(user => { // refactor
         return user.email === req.body['email'];
       })[0];
       // can just use search users??
@@ -174,10 +178,19 @@ let hasPassword = utilities.searchUsers(users, 'password', req.body['password'])
       res.cookie('user_id', currentUser['id']);
       res.redirect('/urls');
     } else {
-      let errorMessage = !hasEmail ? 'Incorrect Email' : 'Incorrect Password';
       res.status(403);;
-      res.send(errorMessage);
+      res.send('Incorrect Password');
+
     }
+  }else {
+    res.status(403);;
+    res.send('Incorrect Email, or does not exist');
+  }
+
+
+
+
+
 });
 
 
@@ -195,17 +208,19 @@ app.post('/register', (req, res) => {
   if (!req.body['email'] || !req.body['password']) {
     res.status(400);
     res.send("Missing email, or password");
-  } else if (utilities.searchUsers(users, 'email', req.body['email'])) {
+  } else if (utilities.searchUsers(users, 'email', req.body['email'])) { // refactor// refactor
     res.status(400);
     res.send("Email, already exists");
   } else {
     users[randomID] = {
       id: `${randomID}`,
       email: req.body['email'],
-      password: req.body['password']
+      password: bcrypt.hashSync(req.body['password'], 10)
     };
     res.cookie('user_id', randomID);
+    console.log(users, "reg users")
     res.redirect("/urls");
+
   }
 })
 
@@ -216,13 +231,4 @@ app.listen(PORT, () => {
 });
 
 
-
-
-// urls page will need to filter data base
-
-// urls/:id should display a message if the user isnt logged in, or if the url with the matching
-
-// :id doesnt belong to them
-
-//
 
