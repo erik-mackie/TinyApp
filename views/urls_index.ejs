@@ -9,14 +9,22 @@
     <% include ../views/partials/_header %>
   </header>
 
-  <h2> URL LIST </h2>
-  <ul>
-    <% for (var url in urls) { %>
-        <li><%= urls[url] %></li>
-        <form method="POST" action="/urls/<%= url %>/delete" ><button type="submit">Remove</button></form>
-        <a href="/urls/<%= url %>">Edit<a>
-    <% }; %>
-  </ul>
-  <a href="/urls/new">New URL<a>
+  <% if(user){ %>
+    <h2> URL LIST </h2>
+    <ul>
+      <% for (var url in urls) { %>
+          <li><%= urls[url] %></li>
+          <form method="POST" action="/urls/<%= url %>/delete" ><button type="submit">Remove</button></form>
+          <a href="/urls/<%= url %>">Edit<a>
+      <% }; %>
+    </ul>
+    <a href="/urls/new">New URL<a>
+  <% } else{ %>
+    <h1 style="padding:50px; background-color:#BFEFFF "> Please sign in or register </h1>
+  <% }; %>
+
 </body>
 </html>
+
+
+

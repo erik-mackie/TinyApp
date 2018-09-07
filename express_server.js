@@ -11,10 +11,16 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
 app.use(cookieParser());
 
+
 let urlDatabase = {
-  userID: {
+  'pler31': {
     'b2xVn2': 'http://www.lighthouselabs.ca',
     'ag4gda': 'http://www.google.ca'
+  },
+
+  '13d345': {
+    '13d5wa': 'http://www.facebook.ca',
+    '5sc2fz': 'http://www.whatever.ca'
   }
 };
 
@@ -35,7 +41,7 @@ app.get("/", (req, res) => {
 //render listpage
 app.get("/urls", (req, res) => {
   let templateVars = {
-    urls: urlDatabase[req.cookies['user_id']], //task2
+    urls: urlDatabase[req.cookies['user_id']],
     user: users[req.cookies["user_id"]]
   };
   res.render("urls_index", templateVars);
@@ -81,14 +87,21 @@ app.get('/login', (req, res) => {
 
 // display form for editing Url
 app.get("/urls/:id", (req, res) => {
-  let templateVars = {
-    shortURL: req.params.id,
-    longURL: urlDatabase[req.params.id],
-    user: users[req.cookies["user_id"]]
-  };
+   let templateVars = {
+      shortURL: req.params.id,
+      longURL: urlDatabase[req.params.id],
+      user: users[req.cookies["user_id"]],
+      belongToUser: false
+    };
+
+  let inUserObject = utilities.checkBelongsToUser(urlDatabase, req.params.id, req.cookies['user_id']);
+  // if in another users data object, show alert on page
+  if (req.params.id !== inUserObject ) {
+      templateVars.belongToUser = true;
+  }
+
   res.render("urls_show", templateVars);
 });
-
 
 
 //create URL and redirect to edit page
@@ -97,7 +110,7 @@ app.post("/urls", (req, res) => {
   // check if database has existing user and create if not
   if (!urlDatabase.hasOwnProperty(req.cookies['user_id'])) {
     urlDatabase[req.cookies["user_id"]] = {};
-    urlDatabase[req.cookies["user_id"]][randomKey] = req.body["longURL"]; // task2
+    urlDatabase[req.cookies["user_id"]][randomKey] = req.body["longURL"];
   } else {
     // if exists, add to object
     urlDatabase[req.cookies["user_id"]][randomKey] = req.body["longURL"];
@@ -107,25 +120,26 @@ app.post("/urls", (req, res) => {
 
 });
 
+
 // delete a url
 app.post('/urls/:id/delete', (req, res) => {
-
   delete urlDatabase[req.cookies['user_id']][req.params.id];
   res.redirect("/urls");
 });
 
+
 //update an url
 app.post('/urls/:id', (req, res) => {
-    let updatedUrl = req.body["update"];
-    urlDatabase[req.params.id] = updatedUrl;
-    res.redirect("/urls");
+  let updatedUrl = req.body["update"];
+  urlDatabase[req.params.id] = updatedUrl;
+  res.redirect("/urls");
 });
-
+//error code 403 fosearchUsers(users, 'email', req.body['email']))r forbidden
+// compare if params :id is in the current users directory based off cookie
 
 
 //login and create cookie
 app.post('/login', (req, res) => {
-
   // find if long user email exists and if so, if password matches
   if (utilities.searchUsers(users, 'email', req.body['email'])) {
     if (utilities.searchUsers(users, 'password', req.body['password'])) {
@@ -156,12 +170,12 @@ app.post('/login', (req, res) => {
   }
 });
 
+
 // logout and delete cookie
 app.post('/logout', (req, res) => {
   res.clearCookie('user_id')
   res.redirect("urls");
 });
-
 
 
 //handle register data create cookie
@@ -192,8 +206,12 @@ app.listen(PORT, () => {
 
 
 
-// logout endpoint clears cookie. use clearcookie API DOC
 
+// urls page will need to filter data base
 
+// urls/:id should display a message if the user isnt logged in, or if the url with the matching
 
+// :id doesnt belong to them
+
+//
 

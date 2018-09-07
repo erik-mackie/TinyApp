@@ -9,6 +9,10 @@
     <% include ../views/partials/_header %>
   </header>
 
+  <% if(belongToUser){ %>
+    <h4>Not logged in, or belongs to another user</h4>
+  <% }; %>
+
   <h2>Single URL</h2>
   <ul>
     <li>ShortURL: <%= shortURL %></li>
@@ -19,6 +23,7 @@
     </form>
     <a href="/urls">URL List<a>
   </ul>
+
 
 
 </body>

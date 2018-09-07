@@ -10,5 +10,14 @@ module.exports = {
       }
     }
       return false;
+  },
+  checkBelongsToUser: function(urlDatabase, shortURL, userId){
+    for(var key in urlDatabase){
+      if(key === userId){
+        if(urlDatabase[key].hasOwnProperty(shortURL)){
+          return true;
+        }
+      }
+    }
   }
 }
