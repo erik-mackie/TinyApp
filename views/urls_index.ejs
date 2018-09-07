@@ -13,9 +13,13 @@
     <h2> URL LIST </h2>
     <ul>
       <% for (var url in urls) { %>
-          <li><%= urls[url] %></li>
-          <form method="POST" action="/urls/<%= url %>/delete" ><button type="submit">Remove</button></form>
-          <a href="/urls/<%= url %>">Edit<a>
+
+          <li style="display:inline;">
+            <p> <%= url %> ----></p>    <a href='<%= urls[url] %>'><%= urls[url] %></a>
+            <form method="POST" action="/urls/<%= url %>/delete" ><button type="submit">Remove</button></form>
+            <a href="/urls/<%= url %>">Edit</a>
+          </li>
+
       <% }; %>
     </ul>
     <a href="/urls/new">New URL<a>

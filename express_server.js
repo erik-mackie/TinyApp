@@ -65,10 +65,10 @@ app.get("/urls/new", (req, res) => {
 
 //if short url is passed, redirect to longUrl
 app.get("/u/:shortURL", (req, res) => {
+
   let longURL = urlDatabase[req.params.shortURL];
   res.redirect(longURL);
 });
-
 
   // render register page
 app.get('/register', (req, res) => {
