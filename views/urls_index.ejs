@@ -16,13 +16,13 @@
 
           <li style="display:inline;">
             <p> <%= url %> ----></p>    <a href='<%= urls[url] %>'><%= urls[url] %></a>
-            <form method="POST" action="/urls/<%= url %>/delete" ><button type="submit">Remove</button></form>
+            <form method="POST" action="/urls/<%= url %>/delete" ><button type="submit">Delete</button></form>
             <a href="/urls/<%= url %>">Edit</a>
           </li>
 
       <% }; %>
     </ul>
-    <a href="/urls/new">New URL<a>
+    <a href="/urls/new">Create a New Short Link<a>
   <% } else{ %>
     <h1 style="padding:50px; background-color:#BFEFFF "> Please sign in or register </h1>
   <% }; %>

@@ -3,16 +3,17 @@
 const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
-const bodyParser = require("body-parser"); //parses incoming request bodys, get information from forms submition
+const bodyParser = require("body-parser");
 const utilities = require("./utilities");
-const cookieParser = require('cookie-parser');
+const cookieSession = require('cookie-session')
 const bcrypt = require('bcrypt');
 
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
-app.use(cookieParser());
-
+app.use(cookieSession({
+  secret: 'PleaseKeepThisASecret'
+}));
 
 let urlDatabase = {
   'pler31': {
@@ -25,7 +26,6 @@ let urlDatabase = {
   }
 };
 
-
 let users = {
   "userRandomID": {
     id: "userRandomID",
@@ -37,16 +37,26 @@ let users = {
 
 // home pagevar cookieParser = require('cookie-parser')
 app.get("/", (req, res) => {
-  res.render("welcome");
+  if (req.session.user_id) {
+    let templateVars = {
+      urls: urlDatabase[req.session.user_id],
+      user: users[req.session.user_id]
+    }
+    res.render("urls_new", templateVars);
+  } else {
+    res.render("user_login");
+  }
+
 });
 
 
 //render listpage
 app.get("/urls", (req, res) => {
   let templateVars = {
-    urls: urlDatabase[req.cookies['user_id']],
-    user: users[req.cookies["user_id"]]
+    urls: urlDatabase[req.session.user_id],
+    user: users[req.session.user_id]
   };
+
   res.render("urls_index", templateVars);
 });
 
@@ -54,9 +64,9 @@ app.get("/urls", (req, res) => {
 // render new page
 app.get("/urls/new", (req, res) => {
   // check to see if user is logged in
-  if (utilities.searchUsers(users, "id", req.cookies['user_id'])) {
+  if (utilities.searchUsers(users, "id", req.session.user_id)) {
   let templateVars = {
-    user: users[req.cookies["user_id"]]
+    user: users[req.session.user_id]
   };
   res.render("urls_new", templateVars);
   // if not logged in render login page
@@ -77,7 +87,7 @@ app.get("/u/:shortURL", (req, res) => {
   if (longUrl) {
     res.redirect(longUrl);
   } else {
-    res.status(403);
+    res.send("invalid url")
   }
 });
 
@@ -90,7 +100,7 @@ app.get('/register', (req, res) => {
 // render login page
 app.get('/login', (req, res) => {
   let templateVars = {
-    user: users[req.cookies["user_id"]]
+    user: users[req.session.user_id]
   };
   res.render("user_login", templateVars);
 });
@@ -101,15 +111,23 @@ app.get("/urls/:id", (req, res) => {
 
   let templateVars = {
     shortURL: req.params.id,
-    longURL:  urlDatabase[req.cookies['user_id']][req.params.id],
-    user: users[req.cookies["user_id"]],
+    longURL:  urlDatabase[req.session.user_id][req.params.id],
+    user: users[req.session.user_id],
     belongToUser: false
   };
-  console.log(templateVars.longUrl)
-  let inUserObject = utilities.checkBelongsToUser(urlDatabase, req.params.id, req.cookies['user_id']);
+  let inUserObject = utilities.checkBelongsToUser(urlDatabase, req.params.id, users[req.session.user_id]);
   // if in another users data object, show alert on page
   if (req.params.id !== inUserObject ) {
       templateVars.belongToUser = true;
+  }
+  // search to see if url exists
+  for (var id in urlDatabase) {
+    console.log(urlDatabase[id])
+    if (urlDatabase[id][req.params.id]) {
+      console.log("true");
+    } else {
+      console.log("false")
+    }
   }
 
   res.render("urls_show", templateVars);
@@ -120,14 +138,14 @@ app.get("/urls/:id", (req, res) => {
 app.post("/urls", (req, res) => {
   const randomKey = utilities.randomNumber();
   // check if database has existing user and create if not
-  if (!urlDatabase.hasOwnProperty(req.cookies['user_id'])) {
-    urlDatabase[req.cookies["user_id"]] = {};
-    urlDatabase[req.cookies["user_id"]][randomKey] = req.body["longURL"];
+  if (!urlDatabase.hasOwnProperty(req.session.user_id)) {
+    urlDatabase[req.session.user_id] = {};
+    urlDatabase[req.session.user_id][randomKey] = req.body["longURL"];
   } else {
     // if exists, add to object
-    urlDatabase[req.cookies["user_id"]][randomKey] = req.body["longURL"];
+    /*urlDatabase[req.cookies["user_id"]][randomKey] = req.body["longURL"];*/
+    urlDatabase[req.session.user_id][randomKey] = req.body["longURL"];
   }
-  console.log(urlDatabase)
   res.redirect(`urls/${randomKey}`); // redirect too created page eventualy
 
 });
@@ -135,7 +153,7 @@ app.post("/urls", (req, res) => {
 
 // delete a url
 app.post('/urls/:id/delete', (req, res) => {
-  delete urlDatabase[req.cookies['user_id']][req.params.id];
+  delete urlDatabase[req.session.user_id][req.params.id];
   res.redirect("/urls");
 });
 
@@ -143,7 +161,7 @@ app.post('/urls/:id/delete', (req, res) => {
 //update an url
 app.post('/urls/:id', (req, res) => {
   let updatedUrl = req.body["update"];
-  urlDatabase[req.cookies['user_id']][req.params.id] = updatedUrl;
+  urlDatabase[req.session.user_id][req.params.id] = updatedUrl;
   res.redirect("/urls");
 });
 //error code 403 fosearchUsers(users, 'email', req.body['email']))r forbidden
@@ -174,8 +192,8 @@ app.post('/login', (req, res) => {
       // can just use search users??
       // can just use search users??
       // can just use search users??
-      console.log(urlDatabase)
-      res.cookie('user_id', currentUser['id']);
+      req.session.user_id = currentUser['id'];
+
       res.redirect('/urls');
     } else {
       res.status(403);;
@@ -186,17 +204,14 @@ app.post('/login', (req, res) => {
     res.status(403);;
     res.send('Incorrect Email, or does not exist');
   }
-
-
-
-
-
 });
 
 
 // logout and delete cookie
 app.post('/logout', (req, res) => {
-  res.clearCookie('user_id')
+  /*res.clearCookie('user_id')*/ // cookie refactor
+  req.session = null;
+
   res.redirect("urls");
 });
 
@@ -217,8 +232,7 @@ app.post('/register', (req, res) => {
       email: req.body['email'],
       password: bcrypt.hashSync(req.body['password'], 10)
     };
-    res.cookie('user_id', randomID);
-    console.log(users, "reg users")
+    req.session.user_id = randomID;
     res.redirect("/urls");
 
   }
