@@ -1,5 +1,17 @@
 "use strict";
 
+
+// issues installing bcrypt, had to install globally and LINK to global from project
+// issues installing bcrypt, had to install globally and LINK to global from project
+// issues installing bcrypt, had to install globally and LINK to global from project
+// issues installing bcrypt, had to install globally and LINK to global from project
+// issues installing bcrypt, had to install globally and LINK to global from project
+// issues installing bcrypt, had to install globally and LINK to global from project
+// issues installing bcrypt, had to install globally and LINK to global from project
+// issues installing bcrypt, had to install globally and LINK to global from project
+// issues installing bcrypt, had to install globally and LINK to global from project
+// issues installing bcrypt, had to install globally and LINK to global from project
+
 const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
@@ -32,11 +44,16 @@ let users = {
     email: "user@example.com",
     password: "purple-monkey-dinosaur"
   }
-
 };
+
+// GET GET GET
+// GET GET GET
+// GET GET GET
+
 
 // home redirects
 app.get("/", (req, res) => {
+  // if user is logged in display new page, else login
   if (req.session.user_id) {
     let templateVars = {
       urls: urlDatabase[req.session.user_id],
@@ -55,7 +72,6 @@ app.get("/urls", (req, res) => {
     urls: urlDatabase[req.session.user_id],
     user: users[req.session.user_id]
   };
-
   res.render("urls_index", templateVars);
 });
 
@@ -69,7 +85,7 @@ app.get("/urls/new", (req, res) => {
     };
   res.render("urls_new", templateVars);
   // if not logged in render login page
-  }else {
+  } else {
     res.render("user_login");
   }
 });
@@ -81,16 +97,17 @@ app.get("/u/:shortURL", (req, res) => {
   for (var url in urlDatabase) {
     if(urlDatabase[url][req.params.shortURL]) {
        longUrl = urlDatabase[url][req.params.shortURL];
-  }
+    }
   }
   if (longUrl) {
     res.redirect(longUrl);
   } else {
-    res.send('Short URL not owned');
+    res.send('Short URL does not exist');
   }
 });
 
-  // render register page
+
+// render register page
 app.get('/register', (req, res) => {
   let templateVars = {
     urls: urlDatabase[req.session.user_id],
@@ -121,16 +138,29 @@ app.get('/login', (req, res) => {
 
 // display form for editing Url
 app.get("/urls/:id", (req, res) => {
-  let templateVars = {
+  // see if :id exists
+  let foundId = undefined;
+  for (var user in urlDatabase) {
+    foundId = urlDatabase[user].hasOwnProperty(req.params.id);
+  }
+    let templateVars = {
     user: users[req.session.user_id],
     belongToUser: false
   };
   let inUserObject = utilities.checkBelongsToUser(urlDatabase, req.params.id, req.session.user_id);
+  // if not signed in, diplay error
+  if (!req.session.user_id) {
+    res.status(403);
+    res.send("Must be signed in");
   // if passed value belongs to user, display
-  if (inUserObject) {
+  } else if (inUserObject) {
     templateVars.shortURL = req.params.id;
     templateVars.longURL = urlDatabase[req.session.user_id][req.params.id],
     templateVars.belongToUser = true;
+    //if id doesn't exist, display message
+  } else if (!foundId) {
+    res.status(403);
+    res.send("Short Url doesn't exist")
   // if in another users data object, show alert on page
   } else {
     res.status(403);
@@ -138,6 +168,10 @@ app.get("/urls/:id", (req, res) => {
   }
   res.render("urls_show", templateVars);
 });
+
+// POST POST POST POST
+// POST POST POST POST
+// POST POST POST POST
 
 
 //create URL and redirect to edit page
@@ -177,18 +211,15 @@ app.post('/login', (req, res) => {
 // if user exists check password
   if (userExists) {
     let correctPass = bcrypt.compareSync(req.body['password'], userExists.password);
-
+    // if password is correct, find user and set session ID
     if (correctPass) {
-      // find user and reset session ID
       let confirmedEmail = utilities.searchUsers(users, 'email', req.body['email'])
       req.session.user_id = confirmedEmail['id'];
       res.redirect('/urls');
-
     } else {
       res.status(403);
       res.send('Incorrect Password');
     }
-
   } else {
     res.status(403);
     res.send('Incorrect Email, or does not exist');
@@ -206,10 +237,11 @@ app.post('/logout', (req, res) => {
 //handle register data create cookie
 app.post('/register', (req, res) => {
   let randomID = utilities.randomNumber();
+  // error messages and cookie set
   if (!req.body['email'] || !req.body['password']) {
     res.status(400);
     res.send("Missing email, or password");
-  } else if (utilities.searchUsers(users, 'email', req.body['email'])) { // refactor// refactor
+  } else if (utilities.searchUsers(users, 'email', req.body['email'])) {
     res.status(400);
     res.send("Email, already exists");
   } else {
