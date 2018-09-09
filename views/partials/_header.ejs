@@ -6,22 +6,23 @@
 
 <body>
   <% if(user){ %>
-  <h2 style="color:blue;"><%= user.email %></h2>
-
-  <form action="/logout" method="POST" style="margin:50px;">
-    <input id="logoutBtn" type="submit" value="Logout">
-  </form>
+  <div style="height: 120px; width: 400px; background-color: #CAE1FF;">
+    <div style="display:flex; justify-content: center">
+      <h2 style="color:black;"><%= user.email %></h2>
+    </div>
+    <div style="display:flex; justify-content: center">
+      <form action="/logout" method="POST" style="margin:10px;">
+        <input id="logoutBtn" type="submit" value="Logout" style="padding: 5px;">
+      </form>
+    </div>
+  </div>
 <% } else{ %>
-  <a style="margin:20px;" href="/register">Register<a>
-  <a style="margin:20px;" href="/login">Login<a>
+  <div style="height: 50px; width: 400px; background-color: #CAE1FF; display:flex; justify-content: center">
+    <a style="margin:20px; font-size: 20px;" href="/register">Register</a>
+    <a style="margin:20px; font-size: 20px;" href="/login">Login</a>
+  </div>
 <% }; %>
 
 </body>
 </html>
-
-
-
-<!-- instead of passing cookie in the cookie value into the templatesvars, and endpoints rending the partial should now pass the entire object by lookinh it up in th users object   -->
-
-<!-- chane the templatevars to pass in a user object proerty instead of the username   -->
 

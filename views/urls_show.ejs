@@ -9,23 +9,33 @@
     <% include ../views/partials/_header %>
   </header>
 
-  <% if(belongToUser){ %>
-    <h4>Not logged in, or belongs to another user</h4>
-    <a href="/urls">Redirect to List<a>
+  <% if(!belongToUser){ %>
+    <div style="height: 100px; width: 400px; background-color: #CAE1FF;">
+      <h4>Not logged in, or belongs to another user</h4>
+      <a href="/urls">Redirect to List</a>
+    </div>
   <% } else { %>
 
+  <div style="height: 220px; width: 400px; background-color: #CAE1FF;">
+    <div style="padding: 10px; display:flex; justify-content: center">
+      <h2>Single URL</h2>
+    </div>
+    <div style="display:flex; justify-content: center">
+      <h4>ShortURL --- <%= shortURL %></h4>
+    </div>
 
-  <h2>Single URL</h2>
-  <ul>
-    <li>ShortURL: <%= shortURL %></li>
-    <!-- <li><%= longURL %></li> -->
-    <form action="/urls/<%= shortURL %>" method="POST">
-      <input id="update" type="text" value="<%= longURL %>" name="update" style="width: 300px">
-      <input type="submit" value="Update">
-    </form>
-    <a href="/urls">URL List<a>
-  </ul>
-  <% }; %>
+    <div style=" display:flex; justify-content: center">
+      <form action="/urls/<%= shortURL %>" method="POST">
+        <input id="update" type="text" value="<%= longURL %>" name="update" style="width: 300px; padding: 5px">
+        <input type="submit" value="Update" style="padding:5px">
+      </form>
+    </div>
+      <div style="display:flex; justify-content: center; margin-top: 10px">
+        <a href="/urls">URL List</a>
+      </div>
+
+  </div>
+    <% }; %>
 
 
 </body>

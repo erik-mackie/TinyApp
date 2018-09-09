@@ -5,17 +5,20 @@
 </head>
 
 <body>
-
-  <h2>User Registration</h2>
-  <form action="/register" method="POST">
-    <!-- Email -->
-      <label for="email">Enter a:</label> <!-- Remove? -->
-      <input id="regEmail" type="email" name="email" placeholder="Email" style="width: 300px">
-      <!-- Password -->
-      <label for="password">Enter a:</label> <!-- Remove? -->
-      <input id="regPassword" type="password" name="password" placeholder="Password" style="width: 300px">
-      <input type="submit" value="Submit">
-    </form>
-
+  <div style="height: 400px; width: 400px; background-color: #CAE1FF;">
+    <div style="padding: 20px; display:flex; justify-content: center">
+      <h2 style="font-size: 30px"> User Registration </h2>
+    </div>
+    <form action="/register" method="POST" style="margin:40px;">
+      <!-- Email -->
+        <input id="regEmail" type="email" name="email" placeholder="Email" style="width: 300px; margin: 10px; padding: 5px;">
+        <!-- Password -->
+        <input id="regPassword" type="password" name="password" placeholder="Password" style="width: 300px; margin: 10px; padding: 5px;">
+        <input type="submit" value="Submit">
+      </form>
+      <div style="padding: 20px; display:flex; justify-content: center" >
+        <a href="/login">Already Registered?</a>
+      </div>
+  </div>
 </body>
 </html>

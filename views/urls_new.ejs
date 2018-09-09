@@ -4,17 +4,24 @@
     <title>New URL</title>
   </head>
 
-  <body style="font-size:20px; padding:50px;">
+  <body>
     <header>
       <% include ../views/partials/_header %>
     </header>
 
-    <h2> New URL </h2>
-    <form action="/urls" method="POST">
-      <label for="longURL">Enter a URL:</label>
-      <input id="longURL" type="text" name="longURL" placeholder="http://" style="width: 300px">
-      <input type="submit" value="Submit">
-    </form>
+    <div style="height: 200px; width: 400px; background-color: #CAE1FF;">
+      <div style="padding: 10px; display:flex; justify-content: center">
+        <h2> New URL </h2>
+      </div>
+      <div style="padding: 10px; display:flex; justify-content: center">
+        <form action="/urls" method="POST">
+          <label for="longURL" style="font-size:16px;">Enter a URL:</label>
+          <input id="longURL" type="text" name="longURL" placeholder="http://" style="width: 300px; padding:5px">
+          <input type="submit" value="Submit" style="padding: 5px;">
+        </form>
+      </div>
+      </div>
+    </div>
 
   </body>
 </html>

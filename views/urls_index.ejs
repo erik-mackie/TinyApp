@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <title>TinyApp</title>
+  <link rel="stylesheet" href="simpleStyle.css">
 </head>
 
 <body>
@@ -10,21 +11,30 @@
   </header>
 
   <% if(user){ %>
-    <h2> URL LIST </h2>
-    <ul>
-      <% for (var url in urls) { %>
+    <div style="height: 800px; width: 400px; background-color: #CAE1FF;">
+      <div style="display:flex; justify-content: center">
+        <h2> URL LIST </h2>
+      </div>
+      <ul>
+        <% for (var url in urls) { %>
+            <li>
+              <p style="font-size:20px;"> <%= url %> ----><a href='<%= urls[url] %>'><%= urls[url] %></a></p>
+              <form method="POST" action="/urls/<%= url %>/delete" ><button type="submit" style="padding:5px">Delete</button><a href="/urls/<%= url %>" style="margin-left: 50px;">Edit</a></form>
 
-          <li style="display:inline;">
-            <p> <%= url %> ----></p>    <a href='<%= urls[url] %>'><%= urls[url] %></a>
-            <form method="POST" action="/urls/<%= url %>/delete" ><button type="submit">Delete</button></form>
-            <a href="/urls/<%= url %>">Edit</a>
-          </li>
+            </li>
 
-      <% }; %>
-    </ul>
-    <a href="/urls/new">Create a New Short Link<a>
+        <% }; %>
+      </ul>
+      <div style="display:flex; justify-content: center; padding: 20px; font-size:25px">
+        <a href="/urls/new">Create a New Short Link</a>
+      </div>
+    </div>
   <% } else{ %>
-    <h1 style="padding:50px; background-color:#BFEFFF "> Please sign in or register </h1>
+    <div style="height: 100px; width: 400px; background-color: #CAE1FF;">
+      <div style="display:flex; justify-content: center">
+        <h3> Please sign in or register </h3>
+      </div>
+    </div>
   <% }; %>
 
 </body>

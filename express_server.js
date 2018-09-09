@@ -1,11 +1,11 @@
-"use strict"
+"use strict";
 
 const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
 const utilities = require("./utilities");
-const cookieSession = require('cookie-session')
+const cookieSession = require('cookie-session');
 const bcrypt = require('bcrypt');
 
 
@@ -35,24 +35,17 @@ let users = {
 
 };
 
-// home pagevar cookieParser = require('cookie-parser')
+// home redirects
 app.get("/", (req, res) => {
   if (req.session.user_id) {
     let templateVars = {
       urls: urlDatabase[req.session.user_id],
       user: users[req.session.user_id]
-    }
+    };
     res.render("urls_new", templateVars);
   } else {
     res.render("user_login");
   }
-
-});
-
-
-// invalid short url
-app.get('/error', (req, res) => {
-  res.render("error_invalid");
 });
 
 
@@ -71,9 +64,9 @@ app.get("/urls", (req, res) => {
 app.get("/urls/new", (req, res) => {
   // check to see if user is logged in
   if (utilities.searchUsers(users, "id", req.session.user_id)) {
-  let templateVars = {
-    user: users[req.session.user_id]
-  };
+    let templateVars = {
+      user: users[req.session.user_id]
+    };
   res.render("urls_new", templateVars);
   // if not logged in render login page
   }else {
@@ -88,21 +81,21 @@ app.get("/u/:shortURL", (req, res) => {
   for (var url in urlDatabase) {
     if(urlDatabase[url][req.params.shortURL]) {
        longUrl = urlDatabase[url][req.params.shortURL];
-    }
+  }
   }
   if (longUrl) {
     res.redirect(longUrl);
   } else {
-    res.redirect("/error")
+    res.send('Short URL not owned');
   }
 });
 
   // render register page
 app.get('/register', (req, res) => {
   let templateVars = {
-      urls: urlDatabase[req.session.user_id],
-      user: users[req.session.user_id]
-    };
+    urls: urlDatabase[req.session.user_id],
+    user: users[req.session.user_id]
+  };
   if (req.session.user_id) {
     res.render("urls_index", templateVars);
   } else {
@@ -117,7 +110,7 @@ app.get('/login', (req, res) => {
   let templateVars = {
       urls: urlDatabase[req.session.user_id],
       user: users[req.session.user_id]
-    };
+  };
   if (req.session.user_id) {
     res.render("urls_index", templateVars);
   } else {
@@ -128,28 +121,21 @@ app.get('/login', (req, res) => {
 
 // display form for editing Url
 app.get("/urls/:id", (req, res) => {
-
   let templateVars = {
-    shortURL: req.params.id,
-    longURL:  urlDatabase[req.session.user_id][req.params.id],
     user: users[req.session.user_id],
     belongToUser: false
   };
   let inUserObject = utilities.checkBelongsToUser(urlDatabase, req.params.id, req.session.user_id);
+  // if passed value belongs to user, display
+  if (inUserObject) {
+    templateVars.shortURL = req.params.id;
+    templateVars.longURL = urlDatabase[req.session.user_id][req.params.id],
+    templateVars.belongToUser = true;
   // if in another users data object, show alert on page
-  if (req.params.id !== inUserObject ) {
-      templateVars.belongToUser = true;
+  } else {
+    res.status(403);
+    res.send('Short URL not owned');
   }
-  // search to see if url exists
-  /*for (var id in urlDatabase) {
-    console.log(urlDatabase[id])
-    if (urlDatabase[id][req.params.id]) {
-      console.log("true");
-    } else {
-      console.log("false")
-    }
-  }*/
-
   res.render("urls_show", templateVars);
 });
 
@@ -162,11 +148,9 @@ app.post("/urls", (req, res) => {
     urlDatabase[req.session.user_id] = {};
     urlDatabase[req.session.user_id][randomKey] = req.body["longURL"];
   } else {
-    // if exists, add to object
-    /*urlDatabase[req.cookies["user_id"]][randomKey] = req.body["longURL"];*/
     urlDatabase[req.session.user_id][randomKey] = req.body["longURL"];
   }
-  res.redirect(`urls/${randomKey}`); // redirect too created page eventualy
+  res.redirect(`urls/${randomKey}`);
 
 });
 
@@ -205,7 +189,7 @@ app.post('/login', (req, res) => {
       res.send('Incorrect Password');
     }
 
-  }else {
+  } else {
     res.status(403);
     res.send('Incorrect Email, or does not exist');
   }
@@ -218,7 +202,6 @@ app.post('/logout', (req, res) => {
   res.redirect("urls");
 });
 
-//refactor if else
 
 //handle register data create cookie
 app.post('/register', (req, res) => {
@@ -237,7 +220,6 @@ app.post('/register', (req, res) => {
     };
     req.session.user_id = randomID;
     res.redirect("/urls");
-
   }
 })
 

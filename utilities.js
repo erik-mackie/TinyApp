@@ -6,18 +6,20 @@ module.exports = {
   searchUsers: function(users, passedKey, passedValue) {
     for (let obj in users) {
       if(users[obj][passedKey] === passedValue) {
-      return users[obj];
+        return users[obj];
       }
     }
-      return false;
+    return false;
   },
   checkBelongsToUser: function(urlDatabase, shortURL, userId){
     for(var key in urlDatabase){
-      if(key === userId){
+      if(key == userId){
         if(urlDatabase[key].hasOwnProperty(shortURL)){
           return true;
+        } else {
+        return false;
         }
       }
     }
   }
-}
+};

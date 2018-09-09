@@ -6,20 +6,21 @@
 
 <body>
 
-  <h2> Login </h2>
-
-    <form action="/login" method="POST" style="margin:50px;">
-      <!-- <input id="username" type="text" name="username" placeholder="Please Enter A Username" style="width: 300px">
-      <input id="loginBtn" type="submit" value="Login"> -->
-      <!-- Email -->
-      <label for="email">Enter a:</label> <!-- Remove? -->
-      <input id="logEmail" type="email" name="email" placeholder="Email" style="width: 300px">
-      <!-- Password -->
-      <label for="password">Enter a:</label> <!-- Remove? -->
-      <input id="logPassword" type="password" name="password" placeholder="Password" style="width: 300px">
-      <input type="submit" value="Submit">
-    </form>
-    <a href="/register">Not registered?<a>
+  <div style="height: 400px; width: 400px; background-color: #CAE1FF;">
+    <div style="padding: 20px; display:flex; justify-content: center">
+      <h2 style="font-size: 30px"> User Login </h2>
+    </div>
+      <form action="/login" method="POST" style="margin:40px;">
+        <!-- Email -->
+        <input id="logEmail" type="email" name="email" placeholder="Email" style="width: 300px; margin: 10px; padding: 5px;">
+        <!-- Password -->
+        <input id="logPassword" type="password" name="password" placeholder="Password" style="width: 300px; margin: 10px; padding: 5px;">
+        <input type="submit" value="Submit">
+      </form>
+    <div style="padding: 20px; display:flex; justify-content: center" >
+      <a href="/register">Not registered?</a>
+    </div>
+  </div>
 
 
 </body>
