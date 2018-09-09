@@ -50,6 +50,12 @@ app.get("/", (req, res) => {
 });
 
 
+// invalid short url
+app.get('/error', (req, res) => {
+  res.render("error_invalid");
+});
+
+
 //render listpage
 app.get("/urls", (req, res) => {
   let templateVars = {
@@ -87,23 +93,37 @@ app.get("/u/:shortURL", (req, res) => {
   if (longUrl) {
     res.redirect(longUrl);
   } else {
-    res.send("invalid url")
+    res.redirect("/error")
   }
 });
 
   // render register page
 app.get('/register', (req, res) => {
-  res.render("user_registration");
+  let templateVars = {
+      urls: urlDatabase[req.session.user_id],
+      user: users[req.session.user_id]
+    };
+  if (req.session.user_id) {
+    res.render("urls_index", templateVars);
+  } else {
+    res.render("user_registration");
+  }
 });
+
 
 
 // render login page
 app.get('/login', (req, res) => {
   let templateVars = {
-    user: users[req.session.user_id]
-  };
-  res.render("user_login", templateVars);
-});
+      urls: urlDatabase[req.session.user_id],
+      user: users[req.session.user_id]
+    };
+  if (req.session.user_id) {
+    res.render("urls_index", templateVars);
+  } else {
+    res.render("user_login", templateVars);
+  }
+})
 
 
 // display form for editing Url
@@ -115,20 +135,20 @@ app.get("/urls/:id", (req, res) => {
     user: users[req.session.user_id],
     belongToUser: false
   };
-  let inUserObject = utilities.checkBelongsToUser(urlDatabase, req.params.id, users[req.session.user_id]);
+  let inUserObject = utilities.checkBelongsToUser(urlDatabase, req.params.id, req.session.user_id);
   // if in another users data object, show alert on page
   if (req.params.id !== inUserObject ) {
       templateVars.belongToUser = true;
   }
   // search to see if url exists
-  for (var id in urlDatabase) {
+  /*for (var id in urlDatabase) {
     console.log(urlDatabase[id])
     if (urlDatabase[id][req.params.id]) {
       console.log("true");
     } else {
       console.log("false")
     }
-  }
+  }*/
 
   res.render("urls_show", templateVars);
 });
@@ -164,44 +184,29 @@ app.post('/urls/:id', (req, res) => {
   urlDatabase[req.session.user_id][req.params.id] = updatedUrl;
   res.redirect("/urls");
 });
-//error code 403 fosearchUsers(users, 'email', req.body['email']))r forbidden
-// compare if params :id is in the current users directory based off cookie
 
 
 //login and create cookie
 app.post('/login', (req, res) => {
-
 // find if long user email exists
   let userExists = utilities.searchUsers(users, 'email', req.body['email']);
-
 // if user exists check password
   if (userExists) {
     let correctPass = bcrypt.compareSync(req.body['password'], userExists.password);
+
     if (correctPass) {
-       //turn object into array
-      // can just use search users??
-      // can just use search users??
-      // can just use search users??
-      let usersArray = Object.keys(users).map(user => { // refactor
-        return users[user];
-      });
-      // filter object for entry
-      let currentUser = usersArray.filter(user => { // refactor
-        return user.email === req.body['email'];
-      })[0];
-      // can just use search users??
-      // can just use search users??
-      // can just use search users??
-      req.session.user_id = currentUser['id'];
-
+      // find user and reset session ID
+      let confirmedEmail = utilities.searchUsers(users, 'email', req.body['email'])
+      req.session.user_id = confirmedEmail['id'];
       res.redirect('/urls');
-    } else {
-      res.status(403);;
-      res.send('Incorrect Password');
 
+    } else {
+      res.status(403);
+      res.send('Incorrect Password');
     }
+
   }else {
-    res.status(403);;
+    res.status(403);
     res.send('Incorrect Email, or does not exist');
   }
 });
@@ -209,9 +214,7 @@ app.post('/login', (req, res) => {
 
 // logout and delete cookie
 app.post('/logout', (req, res) => {
-  /*res.clearCookie('user_id')*/ // cookie refactor
   req.session = null;
-
   res.redirect("urls");
 });
 

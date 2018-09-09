@@ -11,7 +11,9 @@
 
   <% if(belongToUser){ %>
     <h4>Not logged in, or belongs to another user</h4>
-  <% }; %>
+    <a href="/urls">Redirect to List<a>
+  <% } else { %>
+
 
   <h2>Single URL</h2>
   <ul>
@@ -23,7 +25,7 @@
     </form>
     <a href="/urls">URL List<a>
   </ul>
-
+  <% }; %>
 
 
 </body>
